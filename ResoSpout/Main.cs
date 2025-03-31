@@ -5,6 +5,7 @@ using HarmonyLib;
 using ResoniteModLoader;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
@@ -35,15 +36,19 @@ namespace ResoSpout
         
         public override void OnEngineInit()
         {
+            Process.Start(new ProcessStartInfo()
+            {
+                FileName = "W2S\\W2S.exe"
+            });
             Harmony harmony = new Harmony("dev.kokoa.resospout");
             harmony.PatchAll();
 
             Engine.Current.RunPostInit(() =>
             {
                 Msg("RunPostInit");
-                GetOrCreateReceiverPlugin("Cam1", 2161); 
-                GetOrCreateReceiverPlugin("Cam2", 2162);
-                GetOrCreateReceiverPlugin("Cam3", 2163);
+                GetOrCreateReceiverPlugin("Cam1", 721); 
+                // GetOrCreateReceiverPlugin("Cam2", 2162);
+                // GetOrCreateReceiverPlugin("Cam3", 2163);
                 Engine.Current.WorldManager.WorldAdded += (World w) =>
                 {
                     Msg("world focused");
@@ -186,10 +191,9 @@ namespace ResoSpout
 
 
             [HarmonyPatch(typeof(PostProcessLayer), "OnRenderImage")]
-            [HarmonyPrefix]
-            static bool prefix(UnityEngine.RenderTexture src, UnityEngine.RenderTexture dst)
+            [HarmonyPostfix]
+            static void postfix(UnityEngine.RenderTexture src, UnityEngine.RenderTexture dst)
             {
-
                 foreach (var _reciverPl in recieverPlugins)
                 {
                     var _pl = _reciverPl.Value;
@@ -216,28 +220,11 @@ namespace ResoSpout
                         if(_height == dst.height)
                         {
                             Graphics.Blit(recieverTextures[_reciverPl.Key], dst, new Vector2(1.0f, -1.0f), new Vector2(0.0f, 1.0f));
-                            return false;
+                            return;
                         } 
                     }
                 }
-
-                //if (!allowedSenderHeight.Contains(src.height))
-                //{
-                //    return true;
-                //}
-
-                //var key = Util.getNameFromTextureResolution(src.width, src.height);
-                //if (tmpTextures.ContainsKey(key))
-                //{
-                //    var tex = tmpTextures[key];
-                //    SendRenderTexture(tex);
-                //}
-
-                //foreach (var p in senderPlugins)
-                //{
-                //    SpoutUtil.IssuePluginEvent(PluginEntry.Event.Update, p.Value);
-                //}
-                return true;
+                return;
             }
         }
     }
