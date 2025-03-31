@@ -23,7 +23,7 @@ namespace ResoSpout
         public override string Version => "0.0.1";
         public override string Link => "https://github.com/rassi0429/";
 
-        static int[] allowedSenderHeight = { 1081, 1082, 1083 };
+        //static int[] allowedSenderHeight = { 1081, 1082, 1083 };
 
         // Separate dictionaries for plugins and shared textures
         static Dictionary<string, IntPtr> senderPlugins = new Dictionary<string, IntPtr>();
@@ -36,17 +36,17 @@ namespace ResoSpout
         
         public override void OnEngineInit()
         {
-            Process.Start(new ProcessStartInfo()
-            {
-                FileName = "W2S\\W2S.exe"
-            });
+            //Process.Start(new ProcessStartInfo()
+            //{
+            //    FileName = "W2S\\W2S.exe"
+            //});
             Harmony harmony = new Harmony("dev.kokoa.resospout");
             harmony.PatchAll();
 
             Engine.Current.RunPostInit(() =>
             {
                 Msg("RunPostInit");
-                GetOrCreateReceiverPlugin("Cam1", 721); 
+                GetOrCreateReceiverPlugin("WLCam1", 721); 
                 // GetOrCreateReceiverPlugin("Cam2", 2162);
                 // GetOrCreateReceiverPlugin("Cam3", 2163);
                 Engine.Current.WorldManager.WorldAdded += (World w) =>
